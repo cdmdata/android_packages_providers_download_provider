@@ -404,7 +404,9 @@ public class DownloadInfo {
     private int checkIsNetworkTypeAllowed(int networkType) {
         if (mIsPublicApi) {
             int flag = translateNetworkTypeToApiFlag(networkType);
+            Log.v(Constants.TAG, "Translated download network flag:" + flag);
             if ((flag & mAllowedNetworkTypes) == 0) {
+            	Log.v(Constants.TAG, "Download not allowed on this network");
                 return NETWORK_TYPE_DISALLOWED_BY_REQUESTOR;
             }
         }
@@ -422,6 +424,9 @@ public class DownloadInfo {
 
             case ConnectivityManager.TYPE_WIFI:
                 return DownloadManager.Request.NETWORK_WIFI;
+                
+            case ConnectivityManager.TYPE_ETHERNET:
+                return DownloadManager.Request.NETWORK_ETHERNET;
 
             default:
                 return 0;
