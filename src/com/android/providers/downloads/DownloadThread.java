@@ -135,6 +135,17 @@ public class DownloadThread extends Thread {
      */
     private class RetryDownload extends Throwable {}
 
+
+    protected void sendNetworkInUseIntent() {
+        Intent networkIntent = new Intent("com.android.server.WifiManager.NETWORK_IN_USE", null);
+        mContext.sendBroadcast(networkIntent);
+    }
+
+    protected void sendNetworkIdleIntent() {
+        Intent networkIntent = new Intent("com.android.server.WifiManager.NETWORK_IDLE", null);
+        mContext.sendBroadcast(networkIntent);
+    }
+
     /**
      * Executes the download in a separate thread
      */
@@ -151,6 +162,7 @@ public class DownloadThread extends Thread {
             wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, Constants.TAG);
             wakeLock.acquire();
 
+            sendNetworkInUseIntent();
 
             if (Constants.LOGV) {
                 Log.v(Constants.TAG, "initiating download for " + mInfo.mUri);
@@ -176,6 +188,7 @@ public class DownloadThread extends Thread {
             if (Constants.LOGV) {
                 Log.v(Constants.TAG, "download completed for " + mInfo.mUri);
             }
+            sendNetworkIdleIntent();
             finalizeDestinationFile(state);
             finalStatus = Downloads.Impl.STATUS_SUCCESS;
         } catch (StopRequest error) {
